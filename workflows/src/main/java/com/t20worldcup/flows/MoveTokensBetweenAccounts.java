@@ -89,7 +89,10 @@ public class MoveTokensBetweenAccounts extends FlowLogic<String> {
         Pair<List<StateAndRef<FungibleToken>>, List<FungibleToken>> inputsAndOutputs =
                 tokenSelection.generateMove(Arrays.asList(partyAndAmount), buyerAccount, new TokenQueryBy(), getRunId().getUuid());
 
-        Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
+//        Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
+        Random random = new Random();
+        int index = random.nextInt(getServiceHub().getNetworkMapCache().getNotaryIdentities().size());
+        final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(index);
 
         TransactionBuilder transactionBuilder = new TransactionBuilder(notary);
 

@@ -4,10 +4,15 @@ import com.r3.corda.lib.accounts.contracts.states.AccountInfo;
 import com.r3.corda.lib.tokens.contracts.states.FungibleToken;
 import com.r3.corda.lib.tokens.contracts.states.NonFungibleToken;
 import com.t20worldcup.flows.CreateAndShareAccountFlow;
+import com.t20worldcup.flows.IssueEHKDFlows;
+import com.t20worldcup.flows.MoveTokensBetweenAccounts;
 import net.corda.core.contracts.StateAndRef;
+import net.corda.core.identity.CordaX500Name;
+import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.node.services.Vault;
 import net.corda.core.node.services.vault.QueryCriteria;
+import net.corda.core.transactions.SignedTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +24,25 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/token")
 public class Controller {
-    private final CordaRPCOps proxy;
+    private final CordaRPCOps bankProxy;
+    private final CordaRPCOps schoolProxy;
+    private final CordaRPCOps studentProxy;
+
+    private final Party bankParty;
+    private final Party schoolParty;
+    private final Party studentParty;
     private final static Logger logger = LoggerFactory.getLogger(Controller.class);
 
     public Controller(NodeRPCConnection rpc) {
-        this.proxy = rpc.proxy;
+        this.bankProxy = rpc.bankProxy;
+        this.schoolProxy = rpc.schoolProxy;
+        this.studentProxy = rpc.studentProxy;
+
+        bankParty = this.bankProxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=Bank,L=Delhi,C=IN"));
+        schoolParty = this.bankProxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=School,L=Delhi,C=IN"));
+        studentParty = this.bankProxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=Student,L=London,C=GB"));
     }
 
 
@@ -88,10 +105,31 @@ public class Controller {
 //    }
 
 
-    @PostMapping(value = "/createAccount")
-    private String createAccount(String accountName) throws ExecutionException, InterruptedException {
-        List<String> partys = Arrays.asList("Bank", "Student");
-        String s = this.proxy.startFlowDynamic(CreateAndShareAccountFlow.class, accountName, partys).getReturnValue().get();
+    @GetMapping(value = "/createAccountForSchool")
+    private String createAccountForSchool(String accountName) throws ExecutionException, InterruptedException {
+        List<Party> partys = Arrays.asList(bankParty, studentParty);
+        String s = this.schoolProxy.startFlowDynamic(CreateAndShareAccountFlow.class, accountName, partys).getReturnValue().get();
+        return s;
+    }
+
+
+    @GetMapping(value = "/createAccountForStudent")
+    private String createAccountForStudent(String accountName) throws ExecutionException, InterruptedException {
+        List<Party> partys = Arrays.asList(bankParty, schoolParty);
+        String s = this.studentProxy.startFlowDynamic(CreateAndShareAccountFlow.class, accountName, partys).getReturnValue().get();
+        return s;
+    }
+
+    @GetMapping(value = "/issueEHKDForBank")
+    private String createAccountForBank(String accountName, Long amount) throws ExecutionException, InterruptedException {
+        SignedTransaction signedTransaction = this.bankProxy.startFlowDynamic(IssueEHKDFlows.Initiator.class, accountName, amount).getReturnValue().get();
+        return signedTransaction.toString();
+    }
+
+
+    @GetMapping(value = "/moveTokensBetweenAccounts")
+    private String moveTokensBetweenAccounts(String fromAccountName,String toAccountName, Long quantity) throws ExecutionException, InterruptedException {
+        String s = this.studentProxy.startFlowDynamic(MoveTokensBetweenAccounts.class, fromAccountName, toAccountName, quantity).getReturnValue().get();
         return s;
     }
 }

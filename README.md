@@ -302,6 +302,11 @@ run vaultQuery contractStateType : com.r3.corda.lib.tokens.contracts.states.Fung
 #on Student node
 start MoveTokensBetweenAccounts buyerAccountName: 00000001, sellerAccountName: C0000001, currency: "USD", quantity: 1
 
+#http endpoint
+http://localhost:8080/token/createAccountForStudent?accountName=ST00000001
+http://localhost:8080/token/createAccountForSchool?accountName=CA00000001
+http://localhost:8080/token/issueEHKDForBank?accountName=ST00000001&amount=10000
+http://localhost:8080/token/moveTokensBetweenAccounts?fromAccountName=ST00000001&toAccountName=CA00000001&quantity=1
 
 #比较1个notary shard和10个shard的tps
 #场景1，分别issue 100000 个ehkd和10000个bond到其中一个notary0，然后做dvp，得到其tps
