@@ -175,16 +175,16 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         }
         extraConfig = ['h2Settings.address' : 'localhost:20040']
     }
-//    node {
-//        name "O=Notary2,L=London,C=GB"
-//        notary = [validating : false]
-//        p2pPort 30002
-//        rpcSettings {
-//            address("localhost:30003")
-//            adminAddress("localhost:30043")
-//        }
-//        extraConfig = ['h2Settings.address' : 'localhost:30040']
-//    }
+    node {
+        name "O=Notary2,L=London,C=GB"
+        notary = [validating : false]
+        p2pPort 30002
+        rpcSettings {
+            address("localhost:30003")
+            adminAddress("localhost:30043")
+        }
+        extraConfig = ['h2Settings.address' : 'localhost:30040']
+    }
     node {
         name "O=Student,L=London,C=GB"
         p2pPort 10005

@@ -20,7 +20,6 @@ import net.corda.core.contracts.StateAndRef;
 import net.corda.core.flows.*;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.AnonymousParty;
-import net.corda.core.identity.Party;
 import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.core.transactions.TransactionBuilder;
@@ -90,11 +89,12 @@ public class MoveTokensBetweenAccounts extends FlowLogic<String> {
                 tokenSelection.generateMove(Arrays.asList(partyAndAmount), buyerAccount, new TokenQueryBy(), getRunId().getUuid());
 
 //        Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
-        Random random = new Random();
-        int index = random.nextInt(getServiceHub().getNetworkMapCache().getNotaryIdentities().size());
-        final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(index);
-
-        TransactionBuilder transactionBuilder = new TransactionBuilder(notary);
+//        Random random = new Random();
+//        int index = random.nextInt(getServiceHub().getNetworkMapCache().getNotaryIdentities().size());
+//        final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(index);
+//
+//        TransactionBuilder transactionBuilder = new TransactionBuilder(notary);
+        TransactionBuilder transactionBuilder = new TransactionBuilder();
 
         MoveTokensUtilitiesKt.addMoveTokens(transactionBuilder, inputsAndOutputs.getFirst(), inputsAndOutputs.getSecond());
 
