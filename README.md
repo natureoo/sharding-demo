@@ -317,3 +317,15 @@ http://localhost:10050/token/moveTokensBetweenAccounts?fromAccountName=ST0000000
 dvp时由ehkd确定notary，拿出当前notary到bond，然后dvp
 比较上述两个场景到tps，
 移动ehkd和bond到算法可以以后补充，如何
+
+
+3 bank, 24 students 3 schools
+
+application.property
+bank List<Party> , //Party list
+studentMap Map<String, String>, // Account , party name mapping
+schoolMap Map<String, String> , // Account , party name mapping
+
+partyMap Map<String, PartyInfo>, //Party name, party info(host, port, username password)
+
+partyRpcMap Map<String, CordaRpcOps>, //Party name, corda rpc connection
